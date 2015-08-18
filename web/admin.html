@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+ <html lang="en">
+   <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>Constant Oduol | Admin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="description" content="Samburu University Students Association"/>
+        <meta name="author" content="constant">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/jquery-ui.css" rel="stylesheet">
+        <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
+        <link href='https://fonts.googleapis.com/css?family=Alef' rel='stylesheet' type='text/css'>
+        <script src="js/ui.js"></script>
+        <script src="js/jquery-1.9.1.js"></script>
+        <script src="js/jquery-ui.js"></script>
+        <script src="js/bootstrap-modal.js"></script>
+        <script src="js/ace/ace.js"></script>
+         <style>
+             
+         
+          
+         #menu {
+           background : white;
+           padding :15px;
+        
+         }
+         
+      
+         
+         a{
+           padding : 20px;
+         }
+         
+         a:hover {
+           text-decoration : none;
+           color : black;
+           background :  #90dbf4;
+         }
+         
+         .btn-primary {
+           background : rgb(15,157,88)
+         }
+         
+         .btn-primary:hover {
+            background : rgb(244,180,0);
+         }
+         
+         .modal-dialog {
+			width: 1200px;
+          }
+         
+         .ace_editor {
+        position: relative !important;
+        border: 1px solid lightgray;
+        margin: auto;
+        height: 500px;
+        width: 100%;
+    }
+
+    .ace_editor.fullScreen {
+        height: auto;
+        width: auto;
+        border: 0;
+        margin: 0;
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background: white;
+    }
+            
+          body {
+              background : #eee;
+              font-family: 'Alef', sans-serif;
+          }
+     
+     
+         .modal-dialog {
+			width: 1200px;
+          }
+         
+     
+          .static-modal .modal{
+              position:relative;
+              top:auto;
+              right:auto;
+              left:auto;
+              bottom:auto;
+              z-index:1;
+              display:block;
+              overflow : auto
+            }
+           .static-modal .modal-dialog{
+              left:auto;
+              margin-left:auto;
+              margin-right:auto
+            }
+            
+             
+		 .modal-content {
+ 			-webkit-box-shadow: 0 0px 0px ;
+ 			box-shadow: 0 0px 0px ;
+ 			border-radius : 0px; 
+        }
+           #new_status { 
+       			 
+    		}
+    		
+    		.top-span {
+    			width : 100%
+    			
+    		}
+          
+        </style>
+        </head>
+         <body>
+             <div id="fb-root"></div>
+			<script>
+					(function(d, s, id) {
+ 						 var js, fjs = d.getElementsByTagName(s)[0];
+ 	 					 if (d.getElementById(id)) return;
+ 	 						js = d.createElement(s); js.id = id;
+  	 						js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=1486946611537302";
+  	 						fjs.parentNode.insertBefore(js, fjs);
+  						}
+ 					(document, 'script', 'facebook-jssdk'));
+ 			  </script>
+         <div id="menu">
+         </div>
+         <div id="content">
+          <div class="top-span">
+           <input type='text' id='post_title' class='form-control' placeholder='Status Title'>
+           <input type='text' id='category_title' class='form-control' placeholder='Status Category'>
+           <div id='new_status' ></div>
+            <br>
+            <img src='img/loader.gif' id='new_post_loader' style='display : none'>
+            <input type='button' value='Update Status' onclick='saveStatus()' class='btn btn-primary'>
+           </div>
+
+         </div>
+         <script type="text/javascript">
+            
+            var images;
+            var editor;
+            function initEditor(){
+                editor = ace.edit("new_status");
+                editor.setTheme("ace/theme/eclipse");
+                editor.getSession().setMode("ace/mode/html");
+            }
+            
+            function imageUI() {
+              var html="<input type='button' value='All Images' onclick='allImages()' class='btn btn-primary'>";
+                  $("#modal_body").html(html);
+            }
+            
+            function newPostUI() {
+                var html="<input type='text' id='post_title' class='form-control' placeholder='Status Title'>"+
+                	"<input type='text' id='category_title' class='form-control' placeholder='Status Category'>"+
+                   "<div id='new_status' ></div>"+
+                    "<br>"+
+                    "<img src='img/loader.gif' id='new_post_loader' style='display : none'>"+
+                    "<input type='button' value='Update Status' onclick='saveStatus()' class='btn btn-primary'>";
+                    $("#modal_body").html(html);
+                    initEditor();
+              }
+            
+            function adminUI() {
+                var html="<input type='text' id='admin_email' class='form-control' placeholder='Admin Email'></input>"+
+                    "<br>"+
+                    "<img src='img/loader.gif' id='admin_loader' style='display : none'>"+
+                    "<input type='button' value='Create Admin' onclick=createAdmin('create') class='btn btn-primary' style='margin-right :5px'>"+
+                    "<input type='button' value='Delete Admin' onclick=createAdmin('delete') class='btn btn-primary'>";
+                    $("#modal_body").html(html);
+              }
+            function aboutUI() {
+                var html="<textarea id='about' class='form-control'></textarea>"+
+                    "<br>"+
+                    "<img src='img/loader.gif' id='save_about_loader' style='display : none'>"+
+                    "<input type='button' value='Save' onclick='saveAbout()' class='btn btn-primary'>";
+                    $("#modal_body").html(html);
+            }
+            
+            function saveAbout(){
+            	var about=$("#about").val();
+            	if(about.trim()===""){
+            	  ui.modal("Empty About","modalData('No about entered!')","dismissModal()","");	
+            	  return;
+            	}
+            	 var json={
+                        request_header : {
+                            request_msg : "save_about"
+                         },
+                         request_object : {  
+                           about : about
+                         }
+                     };
+                     
+                      ajax.run({
+                         url : "/data",
+                         type : "post",
+                         data : json,
+                         loadArea : "save_about_loader",
+                         error : function(err){
+                        	 ui.modal("Error","modalData('Whoops an error occurred!')","dismissModal()","");
+                         },
+                         success : function(json){
+                           if(json.data==="success"){
+                        	   ui.modal("Success","modalData('About updated successfully!')","dismissModal()","");  
+                           } 
+                       } 
+                 });
+            	
+            }
+            
+            function fetchAbout(){
+            	var json={
+                        request_header : {
+                            request_msg : "fetch_about"
+                         },
+                         request_object : {  
+                         
+                         }
+                     };
+                     
+                      ajax.run({
+                         url : "/data",
+                         type : "post",
+                         data : json,
+                         error : function(err){
+                        	 ui.modal("Error","modalData('Whoops an error occurred!')","dismissModal()","");
+                         },
+                         success : function(json){
+                           $("#about").val(json.data);
+                       } 
+                 });
+            }
+            
+           
+            
+           function init(){
+        	  //ui.staticmodal("content","New Status","newPostUI()");
+        	  initEditor();
+        	  ui.staticmodal("content","Images","imageUI()");
+        	  ui.staticmodal("content","Create Admin","adminUI()");
+        	  ui.staticmodal("content","About","aboutUI()");
+        	  fetchAbout();
+           }
+           
+           
+           function modalData(txt){
+         	  $("#modal-content").html(txt);	
+           }
+           
+          function dismissModal(){
+        	  $("#alert-window").modal('hide');
+          }
+          
+          function createAdmin(option){
+          	var email=$("#admin_email").val();
+          	if(email.trim()===""){
+          	  ui.modal("Empty Email","modalData('No email entered!')","dismissModal()","");	
+          	  return;
+          	}
+          	 var json={
+                      request_header : {
+                          request_msg : "save_admin"
+                       },
+                       request_object : {  
+                          admin_email : email,
+                          option : option
+                       }
+                   };
+                   
+                    ajax.run({
+                       url : "/data",
+                       type : "post",
+                       data : json,
+                       loadArea : "admin_loader",
+                       error : function(err){
+                      	 ui.modal("Error","modalData('Whoops an error occurred!')","dismissModal()","");
+                       },
+                       success : function(json){
+                    	   if(json.data==="success"){
+                        	   ui.modal("Success","modalData('Admin created successfully!')","dismissModal()","");  
+                           }    
+                     } 
+               });
+          	
+            }
+           
+          function saveStatus(){
+        	var status = editor.getSession().getValue();
+        	var title = $("#post_title").val();
+        	var category = $("#category_title").val();
+        	if(status.trim() === ""){
+        	  ui.modal("Empty Status","modalData('No status entered!')","dismissModal()","");	
+        	  return;
+        	}
+        	 var json={
+                    request_header : {
+                        request_msg : "new_status"
+                     },
+                     request_object : {  
+                        new_status : status,
+                        title : title,
+                        category : category
+                     }
+                 };
+                 
+                  ajax.run({
+                     url : "/data",
+                     type : "post",
+                     data : json,
+                     loadArea : "new_post_loader",
+                     error : function(err){
+                    	 ui.modal("Error","modalData('Whoops an error occurred!')","dismissModal()","");
+                     },
+                     success : function(json){
+                       if(json.data.response==="success"){
+                    	   ui.modal("Success","modalData('Status updated successfully!')","dismissModal()","");
+                    	   var link = "https://constantoduol.appspot.com/?timestamp="+json.data.timestamp+"&title="+encodeURIComponent(title);
+                    	   shareToTimeline(title,link);
+                       } 
+                   } 
+             });
+        	
+          }
+          
+      	function shareToTimeline(message,link){
+			FB.ui({
+					    method: 'feed',
+					    name: 'Constant Oduol | Personal blog',
+					    link: link,
+					    picture: 'https://constantoduol.appspot.com/img/see.png',
+					    description: message
+					  },
+					  function(response) {
+					    if (response && response.post_id) {
+					      ui.modal("Success","modalData('Post was published to timeline successfully')","dismissModal()","");
+					    } else {
+					      ui.modal("Error","modalData('Whoops an error occurred! post was not shared to timeline')","dismissModal()","");
+				     }
+			 });	
+		}
+          
+          function allImages(){
+        	  var json = {
+                      request_header : {
+                          request_msg : "all_images"
+                       },
+                       request_object : {  
+
+                       }
+                   };
+                   
+                    ajax.run({
+                       url : "/data",
+                       type : "post",
+                       data : json,
+                       error : function(err){
+                      	 ui.modal("Error","modalData('Whoops an error occurred!')","dismissModal()","");
+                       },
+                       success : function(json){
+                         images=json.data;
+                         ui.modal("All Images","allImagesUI()","dismissModal()","");
+                     } 
+               });
+          }
+          
+          function allImagesUI(){
+        	var table=$("<table class='table table-condensed'>");
+        	var tr=$("<tr>");
+        	var th=$("<th>");
+        	var th1=$("<th>");
+        	var th2=$("<th>");
+        	th.html("Name");
+        	th1.html("Created");
+        	th2.html("Delete");
+        	tr.append(th).append(th1).append(th2);
+        	table.append(tr);
+        	for(var x=0; x<images.length; x++){
+        	   var image=images[x];
+        	   var tr1=$("<tr>");
+        	   var td=$("<td>");
+        	   var td1=$("<td>");
+        	   var td2=$("<td>");
+        	   td.text(image.blob_name);
+        	   td1.text(new Date(image.timestamp).toLocaleString());
+        	   var a=$("<a href='#deleteImage' onclick=deleteImage('"+image.blob_key+"') style='padding : 5px'>Delete<a>");
+        	   td2.append(a);
+        	   tr1.append(td).append(td1).append(td2);
+        	   table.append(tr1);
+        	   }
+        	 $("#modal-content").append(table);
+          }
+          
+          function deleteImage(blobKey){
+        	  var json={
+                      request_header : {
+                          request_msg : "delete_image"
+                       },
+                       request_object : {  
+						  blob_key : blobKey
+                       }
+                   };
+                   
+                    ajax.run({
+                       url : "/data",
+                       type : "post",
+                       data : json,
+                       error : function(err){
+                      	 ui.modal("Error","modalData('Whoops an error occurred!')","dismissModal()","");
+                       },
+                       success : function(json){
+                    	   if(json.data==="success"){
+                        	   ui.modal("Success","modalData('Image deleted successfully!')","dismissModal()","");  
+                           } 
+                     } 
+               });
+          }
+          
+         
+           window.onload=init;
+         </script>
+       
+        </body>
+  </html>
